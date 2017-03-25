@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %}</title>
+  {% block css %}{% endblock %}
+  {% block js %}{% endblock %}
+</head>
+
+<header>
+  hello world
+</header>
+
+<body>
+  <section id="main">
+    <div class="layout-main">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </section>
+
+  <footer>
+    footer
+  </footer>
+</body>
+</html>
