@@ -12,6 +12,10 @@ class Game(models.Model):
 class GameServerGroup(models.Model):
     name = models.CharField('ゲームサーバーの名前', max_length=32)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    cost_per_hour = models.PositiveIntegerField('１時間あたりのランニングコスト')
+
+    def save(self, *args, **kwargs):
+        super(GameServerGroup, self).save(*args, **kwargs)
 
 
 class GameServer(models.Model):
@@ -25,9 +29,7 @@ class GameServer(models.Model):
         (SAVING, '保存中'),
         (STOPPING, '停止中'),
     )
-    name = models.CharField('ゲームサーバーの名前', max_length=32)
     group = models.ForeignKey(GameServerGroup, on_delete=models.CASCADE)
-    cost_per_hour = models.PositiveIntegerField('１時間あたりのランニングコスト')
     status = models.CharField(
         max_length=12,
         choices=STATUS_CHOICES,

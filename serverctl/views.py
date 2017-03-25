@@ -50,9 +50,22 @@ def new_server_group(request):
 
     if request.method == 'POST':
         game_group = GameServerGroupForm(request.POST)
-        game_group.save()
+        group = game_group.save()
+        GameServer.objects.create(group=group)
+        Player.objects.create(user=request.user, group=group, roll=Player.OWNER)
         return redirect(reverse('serverctl:index'))
 
     else:
         form = GameServerGroupForm()
         return render(request, 'serverctl/new_server.html', {'form': form})
+
+
+@login_required
+def server_group_detail(request, pk):
+    server = GameServerGroup.objects.get(id=pk)
+    players = Player.objects.filter(group=server)
+    context = {
+        'server_group': server,
+        'players': players
+    }
+    return render(request, 'serverctl/server_group_detail.html', context)

@@ -9,4 +9,4 @@ from .models import Player
 class GameServerGroupForm(forms.ModelForm):
     class Meta:
         model = GameServerGroup
-        fields = ('name', 'game', )
+        fields = ('name', 'game', 'cost_per_hour')

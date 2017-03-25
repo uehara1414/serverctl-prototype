@@ -13,7 +13,7 @@
   </thead>
   {% for server in servers %}
     <li>
-      {{ server.name }}
+      <a href="{% url 'serverctl:server_group_detail' pk=server.id %}">{{ server.name }}</a>
     </li>
   {% endfor %}
   </table>

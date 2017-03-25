@@ -1,0 +1,15 @@
+{% extends 'serverctl/base.html' %}
+
+{% block title %}index{% endblock %}
+
+{% block content %}
+  サーバー詳細
+  <h2>サーバー名</h2>
+  {{ server_group.name }}
+  <h2>メンバー</h2>
+  <ul>
+  {% for player in players %}
+    {{ player.user.username }}
+  {% endfor %}
+  </ul>
+{% endblock %}
