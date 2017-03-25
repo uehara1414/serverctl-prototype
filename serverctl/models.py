@@ -17,9 +17,10 @@ class GameServer(models.Model):
         (SAVING, '保存中'),
         (STOPPING, '停止中'),
     )
+    name = models.CharField('ゲームサーバーの名前', max_length=32)
     cost_per_hour = models.PositiveIntegerField('１時間あたりのランニングコスト')
     status = models.CharField(
-        max_length=6,
+        max_length=12,
         choices=STATUS_CHOICES,
         default=STOPPING,
     )
