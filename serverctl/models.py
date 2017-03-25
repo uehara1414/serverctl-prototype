@@ -18,6 +18,7 @@ class GameServer(models.Model):
         (STOPPING, '停止中'),
     )
     name = models.CharField('ゲームサーバーの名前', max_length=32)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     cost_per_hour = models.PositiveIntegerField('１時間あたりのランニングコスト')
     status = models.CharField(
         max_length=12,
