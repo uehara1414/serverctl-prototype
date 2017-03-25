@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 class Game(models.Model):
     name = models.CharField('ゲーム名', max_length=32)
 
+    def __str__(self):
+        return self.name
+
 
 class GameServer(models.Model):
     LOADING = 'LOADING'

@@ -11,11 +11,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .forms import GameServerForm
+from .models import GameServer
 
 
 @login_required
 def index(request):
-    return render(request, 'serverctl/index.html')
+    servers = GameServer.objects.all()
+    return render(request, 'serverctl/index.html', {'servers': servers})
 
 
 def login_view(request):

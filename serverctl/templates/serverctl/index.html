@@ -3,5 +3,18 @@
 {% block title %}index{% endblock %}
 
 {% block content %}
-  ここにコンテンツ
+  <a href="{% url 'serverctl:new_server' %}"><h2>新規サーバー作成</h2></a>
+  <h2>サーバー一覧</h2>
+  <table>
+  <thead>
+  <tr>
+    <td></td>
+  </tr>
+  </thead>
+  {% for server in servers %}
+    <li>
+      {{ server.name }}
+    </li>
+  {% endfor %}
+  </table>
 {% endblock %}
