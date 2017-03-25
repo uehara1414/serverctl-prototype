@@ -6,8 +6,8 @@
   <h2>ログイン</h2>
   <form action="{% url 'serverctl:login' %}" method="post">
   {% csrf_token %}
-  <label for="email">Eメール</label>
-  <input name="email" id="email" type="text">
+  <label for="username">ユーザー名</label>
+  <input name="username" id="username" type="text">
   <label for="password">パスワード</label>
   <input name="password" id="password" type="password">
   <button type="submit">ログイン</button>
@@ -16,8 +16,8 @@
   <h2>新規登録</h2>
   <form action="{% url 'serverctl:signup' %}" method="post">
   {% csrf_token %}
-  <label for="email">Eメール</label>
-  <input name="email" id="email" type="text">
+  <label for="username">ユーザー名</label>
+  <input name="username" id="username" type="text">
   <label for="password">パスワード</label>
   <input name="password" id="password" type="password">
   <button type="submit">登録</button>

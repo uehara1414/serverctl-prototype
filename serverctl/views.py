@@ -15,7 +15,7 @@ def index(request):
 
 def login_view(request):
     if request.method == 'POST':
-        user = authenticate(username=request.POST['email'], password=request.POST['password'])
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user is not None:
             if user.is_active:
                 login(request, user)
@@ -28,9 +28,9 @@ def login_view(request):
 def signup(request):
     print(request.POST)
     if request.method == 'POST':
-        user = User.objects.create_user(username=request.POST['email'], password=request.POST['password'])
+        user = User.objects.create_user(username=request.POST['username'], password=request.POST['password'])
         print(user)
-        authenticate(username=request.POST['email'], password=request.POST['password'])
+        authenticate(username=request.POST['username'], password=request.POST['password'])
         login(request, user)
         return redirect(reverse('serverctl:index'))
     return redirect('/login/')
