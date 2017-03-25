@@ -6,7 +6,7 @@ from .models import GameServerGroup
 from .models import Player
 
 
-class GameServerForm(forms.ModelForm):
+class GameServerGroupForm(forms.ModelForm):
     class Meta:
-        model = GameServer
-        exclude = ('status', )
+        model = GameServerGroup
+        fields = ('name', 'game', )

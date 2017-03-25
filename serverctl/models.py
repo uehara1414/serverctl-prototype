@@ -9,6 +9,11 @@ class Game(models.Model):
         return self.name
 
 
+class GameServerGroup(models.Model):
+    name = models.CharField('ゲームサーバーの名前', max_length=32)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+
 class GameServer(models.Model):
     LOADING = 'LOADING'
     RUNNING = 'RUNNING'
@@ -21,19 +26,13 @@ class GameServer(models.Model):
         (STOPPING, '停止中'),
     )
     name = models.CharField('ゲームサーバーの名前', max_length=32)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    group = models.ForeignKey(GameServerGroup, on_delete=models.CASCADE)
     cost_per_hour = models.PositiveIntegerField('１時間あたりのランニングコスト')
     status = models.CharField(
         max_length=12,
         choices=STATUS_CHOICES,
         default=STOPPING,
     )
-
-
-class GameServerGroup(models.Model):
-    name = models.CharField('ゲームサーバーの名前', max_length=32)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    server = models.ForeignKey(GameServer, on_delete=models.CASCADE)
 
 
 class Player(models.Model):

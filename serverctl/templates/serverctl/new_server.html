@@ -4,7 +4,7 @@
 
 {% block content %}
 
-  <form method="post" action="{% url 'serverctl:new_server' %}">
+  <form method="post" action="{% url 'serverctl:new_server_group' %}">
   {% csrf_token %}
     {{ form }}
   <button type="submit">作成</button>

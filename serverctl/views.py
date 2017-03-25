@@ -10,13 +10,15 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from .forms import GameServerForm
+from .forms import GameServerGroupForm
 from .models import GameServer
+from .models import GameServerGroup
+from .models import Player
 
 
 @login_required
 def index(request):
-    servers = GameServer.objects.all()
+    servers = GameServerGroup.objects.all()
     return render(request, 'serverctl/index.html', {'servers': servers})
 
 
@@ -43,13 +45,14 @@ def signup(request):
     return redirect('/login/')
 
 
-def new_server(request):
+@login_required
+def new_server_group(request):
 
     if request.method == 'POST':
-        game_server = GameServerForm(request.POST)
-        game_server.save()
+        game_group = GameServerGroupForm(request.POST)
+        game_group.save()
         return redirect(reverse('serverctl:index'))
 
     else:
-        form = GameServerForm()
+        form = GameServerGroupForm()
         return render(request, 'serverctl/new_server.html', {'form': form})
