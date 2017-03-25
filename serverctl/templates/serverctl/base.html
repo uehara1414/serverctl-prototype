@@ -9,7 +9,9 @@
 </head>
 
 <header>
-  hello world
+  {% if user.is_authenticated %}
+  ようこそ {{ user }} さん <a href="{% url 'serverctl:login' %}">ログアウト</a>
+  {% endif %}
 </header>
 
 <body>
