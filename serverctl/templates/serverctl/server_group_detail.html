@@ -11,7 +11,9 @@
   <h2>メンバー</h2>
   <ul>
   {% for player in players %}
-    {{ player.user.username }}
+    <li>
+    <a href="{% url 'serverctl:player_detail' pk=player.pk %}">{{ player.user.username }}</a>
+    </li>
   {% endfor %}
   </ul>
   <h2>メンバー追加</h2>

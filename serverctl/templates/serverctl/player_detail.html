@@ -1,0 +1,18 @@
+{% extends 'serverctl/base.html' %}
+
+{% block title %}index{% endblock %}
+
+{% block content %}
+  <h1>プレイヤー詳細</h1>
+  <h2>プレイヤー名</h2>
+  {% if players %}
+   {{ players.1.user.username }}
+  {% endif %}
+
+  <h2>参加ゲーム</h2>
+  {% for player in players %}
+    <a href="{% url 'serverctl:server_group_detail' pk=player.group.pk %}">{{ player.group.name }}</a>
+    <a href="#">({{ player.group.game.name }})</a><br>
+    役割: {{ player.roll }}<br>
+  {% endfor %}
+{% endblock %}

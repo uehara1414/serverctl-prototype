@@ -82,3 +82,9 @@ def add_player(request):
         player = AddPlayerForm(request.POST)
         player = player.save()
         return redirect(f'/server_group/{player.group.pk}/')
+
+
+def player_detail(request, pk):
+    user = Player.objects.get(pk=pk).user
+    players = Player.objects.filter(user=user)
+    return render(request, 'serverctl/player_detail.html', {'players': players})
