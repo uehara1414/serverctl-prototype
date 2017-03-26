@@ -1,3 +1,6 @@
+from datetime import timedelta
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -32,7 +35,7 @@ class GameServer(models.Model):
         (SAVING, '保存中'),
         (STOPPING, '停止中'),
     )
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(default=timezone.now)
     group = models.ForeignKey(GameServerGroup, on_delete=models.CASCADE)
     status = models.CharField(
@@ -65,12 +68,18 @@ class GameServer(models.Model):
         self.status = self.STOPPING
         ServerHistory.objects.create(server=self, status=self.STOPPING)
 
+        from pprint import pprint
+        pprint(self.calc_payment())
+
         self.save()
+
+    def calc_payment(self):
+        return self.started_at - timezone.now()
 
 
 class ServerHistory(models.Model):
     server = models.ForeignKey(GameServer, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=12,
         choices=GameServer.STATUS_CHOICES,
@@ -93,3 +102,13 @@ class Player(models.Model):
         choices=ROLL_CHOICES,
         default=NORMAL,
     )
+
+
+class Payments(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    player = models.ForeignKey(Player)
+    amount = models.IntegerField(default=0)
+    paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.player.user.username}: {self.amount}円 {self.paid}'
