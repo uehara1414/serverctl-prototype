@@ -71,7 +71,7 @@ class GameServer(models.Model):
         players = Player.objects.filter(group=self.group)
         amount = self.calc_payment() // len(players)
         for player in players:
-            Payments.objects.create(player=player, amount=amount)
+            Payments.objects.create(player=player, group=self.group, amount=amount)
         self.save()
 
     def calc_payment(self):
@@ -109,8 +109,23 @@ class Player(models.Model):
 class Payments(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     player = models.ForeignKey(Player)
+    group = models.ForeignKey(GameServerGroup)
     amount = models.IntegerField(default=0)
     paid = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.player.user.username}: {self.amount}円 {self.paid}'
+
+
+class PaymentHistory(models.Model):
+    CREATED = 'CREATED'
+    PAID = 'PAID'
+    TYPE_CHOICES = (
+        (CREATED, '請求'),
+        (PAID, '決済'),
+    )
+    payment = models.ForeignKey(Payments)
+    type = models.CharField(
+        max_length=12,
+        choices=TYPE_CHOICES
+    )

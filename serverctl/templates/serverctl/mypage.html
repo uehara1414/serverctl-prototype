@@ -8,11 +8,20 @@
   <h2>参加サーバー</h2>
   <ul>
   {% for group in groups %}
-    {{ group }}
+    <li>
+    {{ group.name }}({{ group.game.name }})
+    </li>
   {% endfor %}
   </ul>
   <h2>支払い</h2>
   {% for payment in payments %}
-    {{ payment }}
+    <li>
+    {{ payment.group.name }}({{ payment.group.game.name }}) {{ payment.amount }}円
+    {% if payment.paid %}
+      支払い済み
+    {% else %}
+      未決済
+    {% endif %}
+    </li>
   {% endfor %}
 {% endblock %}
