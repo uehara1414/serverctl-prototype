@@ -11,7 +11,7 @@
   {% if server.status == 'STOPPING' %}
     <a href="{% url 'serverctl:start_server' pk=server.pk %}">スタート</a>
   {% elif server.status == 'RUNNING' %}
-    ストップ
+    <a href="{% url 'serverctl:stop_server' pk=server.pk %}">ストップ</a>
   {% endif %}
   <h2>メンバー</h2>
   <ul>
@@ -29,4 +29,10 @@
     {{ add_player_form.roll }}
   <button type="submit">追加</button>
   </form>
+  <h2>履歴</h2>
+  <ul>
+  {% for history in histories %}
+    <li>{{ history.created_at }}: {{ history.get_status_display }}</li>
+  {% endfor %}
+  </ul>
 {% endblock %}

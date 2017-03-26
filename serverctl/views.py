@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from .models import GameServer
 from .models import GameServerGroup
 from .models import Player
+from .models import ServerHistory
 
 from .forms import GameServerGroupForm
 from .forms import AddPlayerForm
@@ -68,10 +69,12 @@ def server_group_detail(request, pk):
     players = Player.objects.filter(group=group)
     server = GameServer.objects.filter(group=group).latest()
     add_player_form = AddPlayerForm()
+    histories = ServerHistory.objects.filter(server=server)
     context = {
         'server_group': group,
         'players': players,
         'server': server,
+        'histories': histories,
         'add_player_form': add_player_form
     }
     return render(request, 'serverctl/server_group_detail.html', context)
@@ -93,4 +96,10 @@ def player_detail(request, pk):
 def start_server(request, pk):
     server = GameServer.objects.get(pk=pk)
     server.start()
+    return redirect(f'/server_group/{server.group.pk}/')
+
+
+def stop_server(request, pk):
+    server = GameServer.objects.get(pk=pk)
+    server.stop()
     return redirect(f'/server_group/{server.group.pk}/')
