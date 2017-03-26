@@ -68,13 +68,15 @@ class GameServer(models.Model):
         self.status = self.STOPPING
         ServerHistory.objects.create(server=self, status=self.STOPPING)
 
-        from pprint import pprint
-        pprint(self.calc_payment())
-
+        players = Player.objects.filter(group=self.group)
+        amount = self.calc_payment() // len(players)
+        for player in players:
+            Payments.objects.create(player=player, amount=amount)
         self.save()
 
     def calc_payment(self):
-        return self.started_at - timezone.now()
+        hours = (timezone.now() - self.started_at).seconds // 60 // 60 + 1
+        return self.group.cost_per_hour * hours
 
 
 class ServerHistory(models.Model):
