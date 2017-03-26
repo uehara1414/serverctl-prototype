@@ -116,6 +116,14 @@ class Payments(models.Model):
     def __str__(self):
         return f'{self.player.user.username}: {self.amount}円 {self.paid}'
 
+    def save(self, *args, **kwargs):
+        super(Payments, self).save(*args, **kwargs)
+        if not self.paid:
+            type = PaymentHistory.CREATED
+        else:
+            type = PaymentHistory.PAID
+        PaymentHistory.objects.create(payment=self, type=type)
+
 
 class PaymentHistory(models.Model):
     CREATED = 'CREATED'
@@ -124,6 +132,7 @@ class PaymentHistory(models.Model):
         (CREATED, '請求'),
         (PAID, '決済'),
     )
+    created_at = models.DateTimeField(auto_now_add=True)
     payment = models.ForeignKey(Payments)
     type = models.CharField(
         max_length=12,
