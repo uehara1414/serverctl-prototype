@@ -7,6 +7,7 @@ from .views import new_server_group
 from .views import add_player
 from .views import server_group_detail
 from .views import player_detail
+from .views import start_server
 
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     url(r'^server_group/(?P<pk>[0-9]+)/$', server_group_detail, name='server_group_detail'),
     url(r'^add_player/$', add_player, name='add_player'),
     url(r'^player_detail/(?P<pk>[0-9]+)/$', player_detail, name='player_detail'),
+    url(r'^start_server/(?P<pk>[0-9]+)/$', start_server, name='start_server'),
 ]

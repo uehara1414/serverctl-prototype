@@ -88,3 +88,9 @@ def player_detail(request, pk):
     user = Player.objects.get(pk=pk).user
     players = Player.objects.filter(user=user)
     return render(request, 'serverctl/player_detail.html', {'players': players})
+
+
+def start_server(request, pk):
+    server = GameServer.objects.get(pk=pk)
+    server.start()
+    return redirect(f'/server_group/{server.group.pk}/')

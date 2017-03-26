@@ -9,7 +9,7 @@
   <h2>サーバー状態</h2>
   {{ server.get_status_display }}
   {% if server.status == 'STOPPING' %}
-    スタート
+    <a href="{% url 'serverctl:start_server' pk=server.pk %}">スタート</a>
   {% elif server.status == 'RUNNING' %}
     ストップ
   {% endif %}
