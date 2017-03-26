@@ -5,7 +5,9 @@
 {% block content %}
   サーバー詳細
   <h2>サーバー名</h2>
-  {{ server_group.name }}
+  {{ server_group.name }} ({{ server_group.game.name }})
+  <h2>サーバー状態</h2>
+  {{ server.status }}
   <h2>メンバー</h2>
   <ul>
   {% for player in players %}

@@ -62,10 +62,12 @@ def new_server_group(request):
 
 @login_required
 def server_group_detail(request, pk):
-    server = GameServerGroup.objects.get(id=pk)
-    players = Player.objects.filter(group=server)
+    group = GameServerGroup.objects.get(id=pk)
+    players = Player.objects.filter(group=group)
+    server = GameServer.objects.filter(group=group).latest()
     context = {
-        'server_group': server,
-        'players': players
+        'server_group': group,
+        'players': players,
+        'server': server
     }
     return render(request, 'serverctl/server_group_detail.html', context)

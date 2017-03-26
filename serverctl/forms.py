@@ -10,3 +10,9 @@ class GameServerGroupForm(forms.ModelForm):
     class Meta:
         model = GameServerGroup
         fields = ('name', 'game', 'cost_per_hour')
+
+
+class AddPlayerForm(forms.ModelForm):
+    class Meta:
+        model = Player
+        fields = ('user', 'roll')

@@ -29,12 +29,16 @@ class GameServer(models.Model):
         (SAVING, '保存中'),
         (STOPPING, '停止中'),
     )
+    created_at = models.DateTimeField(auto_now=True)
     group = models.ForeignKey(GameServerGroup, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=12,
         choices=STATUS_CHOICES,
         default=STOPPING,
     )
+
+    class Meta:
+        get_latest_by = "created_at"
 
 
 class Player(models.Model):
