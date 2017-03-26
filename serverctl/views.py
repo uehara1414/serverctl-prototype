@@ -10,10 +10,12 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from .forms import GameServerGroupForm
 from .models import GameServer
 from .models import GameServerGroup
 from .models import Player
+
+from .forms import GameServerGroupForm
+from .forms import AddPlayerForm
 
 
 @login_required
@@ -65,9 +67,18 @@ def server_group_detail(request, pk):
     group = GameServerGroup.objects.get(id=pk)
     players = Player.objects.filter(group=group)
     server = GameServer.objects.filter(group=group).latest()
+    add_player_form = AddPlayerForm()
     context = {
         'server_group': group,
         'players': players,
-        'server': server
+        'server': server,
+        'add_player_form': add_player_form
     }
     return render(request, 'serverctl/server_group_detail.html', context)
+
+
+def add_player(request):
+    if request.method == 'POST':
+        player = AddPlayerForm(request.POST)
+        player = player.save()
+        return redirect(f'/server_group/{player.group.pk}/')

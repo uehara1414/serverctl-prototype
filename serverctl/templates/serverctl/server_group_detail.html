@@ -14,4 +14,12 @@
     {{ player.user.username }}
   {% endfor %}
   </ul>
+  <h2>メンバー追加</h2>
+  <form action="{% url 'serverctl:add_player' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="group" value="{{ server_group.id }}">
+    {{ add_player_form.user }}
+    {{ add_player_form.roll }}
+  <button type="submit">追加</button>
+  </form>
 {% endblock %}

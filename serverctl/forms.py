@@ -15,4 +15,5 @@ class GameServerGroupForm(forms.ModelForm):
 class AddPlayerForm(forms.ModelForm):
     class Meta:
         model = Player
-        fields = ('user', 'roll')
+        fields = ('user', 'group', 'roll')
+        widgets = {'group': forms.HiddenInput()}
