@@ -9,7 +9,7 @@
    {{ players.1.user.username }}
   {% endif %}
 
-  <h2>参加ゲーム</h2>
+  <h2>参加サーバー</h2>
   {% for player in players %}
     <a href="{% url 'serverctl:server_group_detail' pk=player.group.pk %}">{{ player.group.name }}</a>
     <a href="#">({{ player.group.game.name }})</a><br>
