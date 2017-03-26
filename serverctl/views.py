@@ -14,6 +14,7 @@ from .models import GameServer
 from .models import GameServerGroup
 from .models import Player
 from .models import ServerHistory
+from .models import Payments
 
 from .forms import GameServerGroupForm
 from .forms import AddPlayerForm
@@ -23,6 +24,16 @@ from .forms import AddPlayerForm
 def index(request):
     servers = GameServerGroup.objects.all()
     return render(request, 'serverctl/index.html', {'servers': servers})
+
+
+def mypage(request):
+    groups = GameServerGroup.objects.filter(player__user=request.user)
+    payments = Payments.objects.filter(player__user=request.user)
+    context = {
+        'groups': groups,
+        'payments': payments
+    }
+    return render(request, 'serverctl/mypage.html', context)
 
 
 def login_view(request):

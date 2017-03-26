@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from .views import index
+from .views import mypage
 from .views import login_view
 from .views import signup
 from .views import new_server_group
@@ -13,6 +14,7 @@ from .views import stop_server
 
 urlpatterns = [
     url(r'^$', index, name='index'),
+    url(r'^mypage/$', mypage, name='mypage'),
     url(r'^login/$', login_view, name='login'),
     url(r'^signup/$', signup, name='signup'),
     url(r'^new_server_group/$', new_server_group, name='new_server_group'),

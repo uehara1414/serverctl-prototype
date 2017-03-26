@@ -1,0 +1,18 @@
+{% extends 'serverctl/base.html' %}
+
+{% block title %}index{% endblock %}
+
+{% block content %}
+  <h1>マイページ</h1>
+  <h2>名前</h2>{{ user.username }}
+  <h2>参加サーバー</h2>
+  <ul>
+  {% for group in groups %}
+    {{ group }}
+  {% endfor %}
+  </ul>
+  <h2>支払い</h2>
+  {% for payment in payments %}
+    {{ payment }}
+  {% endfor %}
+{% endblock %}
