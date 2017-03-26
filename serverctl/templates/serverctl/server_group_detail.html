@@ -7,7 +7,12 @@
   <h2>サーバー名</h2>
   {{ server_group.name }} ({{ server_group.game.name }})
   <h2>サーバー状態</h2>
-  {{ server.status }}
+  {{ server.get_status_display }}
+  {% if server.status == 'STOPPING' %}
+    スタート
+  {% elif server.status == 'RUNNING' %}
+    ストップ
+  {% endif %}
   <h2>メンバー</h2>
   <ul>
   {% for player in players %}
