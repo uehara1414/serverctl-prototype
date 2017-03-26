@@ -90,5 +90,6 @@ ENV/
 
 .idea/
 .aws/
+.ssh/
 
 *.sqlite3
