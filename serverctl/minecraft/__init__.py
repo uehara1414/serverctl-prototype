@@ -9,6 +9,7 @@ import boto3
 from threading import Thread
 from django.conf import settings
 import sys
+import subprocess
 from serverctl_prototype.utils import slack
 
 
@@ -85,15 +86,25 @@ def start_new_server(id):
     slack.send(c)
 
 
-def stop():
-    ip = sys.argv[1]
-    print(ip)
-    try:
-        download(ip)
-    except:
-        pass
-    name = '{}-{}'.format(prefix, str(uuid.uuid4()))
-    upload(name)
+def stop(server_id):
+    ip = get_drpolet_ip(server_id)
+    slack.send(ip)
+    dest = f'{settings.BASE_DIR}/tmp/{server_id}.tar.gz'
+    slack.send(dest)
+    command = ['ansible-playbook',
+                      f'{settings.BASE_DIR}/playbooks/minecraft/save.yml',
+                      '-i',
+                      f'{ip},',
+                      '--extra-vars',
+                      f'"dest={dest}"',
+                      '--private-key',
+                      f'{settings.BASE_DIR}/.ssh/id_rsa'
+                      ]
+    slack.send(command)
+    subprocess.Popen(' '.join(command), universal_newlines=True, shell=True)
+    # delete_droplets()
+    # name = '{}-{}'.format(prefix, str(uuid.uuid4()))
+    # upload(name)
 
 
 def upload(filename):
@@ -102,8 +113,8 @@ def upload(filename):
     s3.Bucket('7dtd').put_object(Key=f'tmp/{filename}', Body=data)
 
 
-def download(ip):
-    ansible_subprocess.run_playbook('playbooks/save.yml', [ip], extra_vars={})
+def download(ip, ):
+    ansible_subprocess.run_playbook('playbooks/save.yml', [ip], extra_vars={'server_id': id})
 
 
 if __name__ == '__main__':

@@ -83,7 +83,7 @@ class GameServer(models.Model):
         ServerHistory.objects.create(server=self, status=self.SAVING, data_s3_key=last.data_s3_key)
         self.save()
 
-        minecraft.delete_droplets()
+        minecraft.stop(last.data_s3_key)
 
         self.status = self.STOPPING
         ServerHistory.objects.create(server=self, status=self.STOPPING, data_s3_key=last.data_s3_key)

@@ -93,3 +93,5 @@ ENV/
 .ssh/
 
 *.sqlite3
+
+tmp/

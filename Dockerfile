@@ -6,6 +6,7 @@ RUN apt-get update -y  &&  apt-get install --fix-missing
 RUN DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y python python-yaml sudo curl gcc python-pip python-dev libffi-dev libssl-dev
 RUN apt-get -y --purge remove python-cffi
+RUN apt-get install -y rsync
 RUN pip install --upgrade cffi
 RUN pip install ansible
 

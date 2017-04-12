@@ -1,0 +1,12 @@
+- hosts: all
+  user: root
+  tasks:
+    - systemd: name=minecraft-server state=stopped
+    - name: fuga
+      command: tar cvfz data.tar.gz minecraft
+      args:
+        chdir: /root
+    - synchronize:
+        mode: pull
+        src: /root/data.tar.gz
+        dest: "{{ dest }}"
