@@ -33,12 +33,11 @@ def delete_droplets():
             droplet.destroy()
 
 
-def create_droplet():
-    name = '{}-{}'.format(prefix, str(uuid.uuid4()))
+def create_droplet(id):
     manager = get_manager()
     keys = manager.get_all_sshkeys()
     droplet = digitalocean.Droplet(token=token,
-                                   name=name,
+                                   name=id,
                                    region='sgp1',
                                    image='centos-7-x64',
                                    size_slug='4gb',
@@ -65,8 +64,8 @@ def ping(ip):
             break
 
 
-def start_new_server():
-    host = create_droplet()
+def start_new_server(id):
+    host = create_droplet(id)
     ping(host)
     try:
         a, b, c = ansible_subprocess.run_playbook(f'{settings.BASE_DIR}/playbooks/new.yml', [host])

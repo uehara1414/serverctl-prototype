@@ -4,6 +4,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import uuid
 from serverctl import minecraft
 from threading import Thread
 from serverctl_prototype.utils import slack
@@ -50,18 +51,23 @@ class GameServer(models.Model):
     class Meta:
         get_latest_by = "created_at"
 
+    def _generate_id(self):
+        return f'{self.group.game.name}-{str(uuid.uuid4())}'
+
     def _start(self):
         slack.send('loading')
+        id = self._generate_id()
         self.started_at = timezone.now()
 
         self.status = self.LOADING
-        ServerHistory.objects.create(server=self, status=self.LOADING)
+        ServerHistory.objects.create(server=self, status=self.LOADING, data_s3_key=id)
         self.save()
 
-        minecraft.start_new_server()
+        slack.send(id)
+        minecraft.start_new_server(id)
 
         self.status = self.RUNNING
-        ServerHistory.objects.create(server=self, status=self.RUNNING)
+        ServerHistory.objects.create(server=self, status=self.RUNNING, data_s3_key=id)
 
         self.save()
         slack.send('created')
@@ -70,14 +76,15 @@ class GameServer(models.Model):
         Thread(target=self._start, daemon=True).start()
 
     def _stop(self):
+        last = ServerHistory.objects.filter(server=self).latest()
         self.status = self.SAVING
-        ServerHistory.objects.create(server=self, status=self.SAVING)
+        ServerHistory.objects.create(server=self, status=self.SAVING, data_s3_key=last.data_s3_key)
         self.save()
 
         minecraft.delete_droplets()
 
         self.status = self.STOPPING
-        ServerHistory.objects.create(server=self, status=self.STOPPING, data_s3_key='tmp')
+        ServerHistory.objects.create(server=self, status=self.STOPPING, data_s3_key=last.data_s3_key)
 
         players = Player.objects.filter(group=self.group)
         amount = self.calc_payment() // len(players)
@@ -101,6 +108,9 @@ class ServerHistory(models.Model):
         max_length=12,
         choices=GameServer.STATUS_CHOICES,
     )
+
+    class Meta:
+        get_latest_by = "created_at"
 
 
 class Player(models.Model):
