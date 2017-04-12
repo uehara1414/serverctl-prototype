@@ -47,6 +47,7 @@ class GameServer(models.Model):
         choices=STATUS_CHOICES,
         default=STOPPING,
     )
+    ip = models.CharField(max_length=64, default='')
 
     class Meta:
         get_latest_by = "created_at"

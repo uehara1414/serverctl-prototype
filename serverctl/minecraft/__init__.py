@@ -91,7 +91,7 @@ def upload(filename):
 
 
 def download(ip):
-    ansible_subprocess.run_playbook('playbooks/save.yml', [ip])
+    ansible_subprocess.run_playbook('playbooks/save.yml', [ip], extra_vars={})
 
 
 if __name__ == '__main__':
