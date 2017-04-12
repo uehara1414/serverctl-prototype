@@ -69,11 +69,12 @@ class GameServer(models.Model):
     def start(self):
         Thread(target=self._start, daemon=True).start()
 
-    def stop(self):
-        """とりあえず、待ち時間を飛ばしてStoppingに"""
-
+    def _stop(self):
         self.status = self.SAVING
         ServerHistory.objects.create(server=self, status=self.SAVING)
+        self.save()
+
+        minecraft.delete_droplets()
 
         self.status = self.STOPPING
         ServerHistory.objects.create(server=self, status=self.STOPPING, data_s3_key='tmp')
@@ -83,6 +84,9 @@ class GameServer(models.Model):
         for player in players:
             Payments.objects.create(player=player, group=self.group, amount=amount)
         self.save()
+
+    def stop(self):
+        Thread(target=self._stop, daemon=True).start()
 
     def calc_payment(self):
         hours = (timezone.now() - self.started_at).seconds // 60 // 60 + 1

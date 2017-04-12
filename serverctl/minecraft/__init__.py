@@ -30,8 +30,7 @@ def delete_droplets():
     for droplet in manager.get_all_droplets():
         print(droplet.id)
         if droplet.name.startswith(prefix):
-            if input('do you delete {}'.format(droplet.name)):
-                droplet.destroy()
+            droplet.destroy()
 
 
 def create_droplet():
