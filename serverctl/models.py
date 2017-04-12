@@ -66,7 +66,7 @@ class GameServer(models.Model):
         ServerHistory.objects.create(server=self, status=self.SAVING)
 
         self.status = self.STOPPING
-        ServerHistory.objects.create(server=self, status=self.STOPPING)
+        ServerHistory.objects.create(server=self, status=self.STOPPING, data_s3_key='tmp')
 
         players = Player.objects.filter(group=self.group)
         amount = self.calc_payment() // len(players)
@@ -82,6 +82,7 @@ class GameServer(models.Model):
 class ServerHistory(models.Model):
     server = models.ForeignKey(GameServer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    data_s3_key = models.CharField(max_length=64, default='')
     status = models.CharField(
         max_length=12,
         choices=GameServer.STATUS_CHOICES,
