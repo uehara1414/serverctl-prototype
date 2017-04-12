@@ -13,6 +13,12 @@
   {% elif server.status == 'RUNNING' %}
     <a href="{% url 'serverctl:stop_server' pk=server.pk %}">ストップ</a>
   {% endif %}
+  <h2>IP Address</h2>
+  {% if server.status == 'RUNNING' %}
+    <p>{{ server.ip }}</p>
+  {% else %}
+    <p>Not Running</p>
+  {% endif %}
   <h2>メンバー</h2>
   <ul>
   {% for player in players %}
