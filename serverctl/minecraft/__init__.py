@@ -9,6 +9,7 @@ import boto3
 from threading import Thread
 from django.conf import settings
 import sys
+from serverctl_prototype.utils import slack
 
 
 prefix = 'minecraft'
@@ -33,6 +34,14 @@ def delete_droplets():
             droplet.destroy()
 
 
+def get_drpolet_ip(droplet_name):
+    manager = get_manager()
+    for droplet in manager.get_all_droplets():
+        print(droplet.id)
+        if droplet.name == droplet_name:
+            return droplet.ip_address
+
+
 def create_droplet(id):
     manager = get_manager()
     keys = manager.get_all_sshkeys()
@@ -47,7 +56,7 @@ def create_droplet(id):
     droplet.create()
     for x in range(120):
         time.sleep(1)
-        droplet = [droplet for droplet in manager.get_all_droplets() if droplet.name == name][0]
+        droplet = [droplet for droplet in manager.get_all_droplets() if droplet.name == id][0]
         if droplet.status == 'active':
             return droplet.ip_address
     return None
@@ -67,10 +76,13 @@ def ping(ip):
 def start_new_server(id):
     host = create_droplet(id)
     ping(host)
-    try:
-        a, b, c = ansible_subprocess.run_playbook(f'{settings.BASE_DIR}/playbooks/new.yml', [host])
-    except:
-        pass
+    slack.send(host)
+
+    a, b, c = ansible_subprocess.run_playbook(f'{settings.BASE_DIR}/playbooks/minecraft/new.yml', [host],
+                                              private_key=f'{settings.BASE_DIR}/.ssh/id_rsa')
+    slack.send(a)
+    slack.send(b)
+    slack.send(c)
 
 
 def stop():

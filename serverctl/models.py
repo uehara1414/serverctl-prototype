@@ -66,6 +66,7 @@ class GameServer(models.Model):
 
         slack.send(id)
         minecraft.start_new_server(id)
+        self.ip = minecraft.get_drpolet_ip(id)
 
         self.status = self.RUNNING
         ServerHistory.objects.create(server=self, status=self.RUNNING, data_s3_key=id)
