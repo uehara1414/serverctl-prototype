@@ -7,6 +7,7 @@ import uuid
 import time
 import boto3
 from threading import Thread
+from django.conf import settings
 import sys
 
 
@@ -70,7 +71,7 @@ def start_new_server():
     host = create_droplet()
     ping(host)
     try:
-        a, b, c = ansible_subprocess.run_playbook('playbooks/new.yml', [host], private_key='/Users/akiya/.ssh/id_rsa')
+        a, b, c = ansible_subprocess.run_playbook(f'{settings.BASE_DIR}/playbooks/new.yml', [host])
     except:
         pass
 

@@ -4,6 +4,8 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from serverctl import minecraft
+from threading import Thread
 
 
 class Game(models.Model):
@@ -47,17 +49,22 @@ class GameServer(models.Model):
     class Meta:
         get_latest_by = "created_at"
 
-    def start(self):
-        """とりあえず、待ち時間を飛ばしてRunningに"""
+    def _start(self):
         self.started_at = timezone.now()
 
         self.status = self.LOADING
         ServerHistory.objects.create(server=self, status=self.LOADING)
+        self.save()
+
+        minecraft.start_new_server()
 
         self.status = self.RUNNING
         ServerHistory.objects.create(server=self, status=self.RUNNING)
 
         self.save()
+
+    def start(self):
+        Thread(target=self._start, daemon=True).start()
 
     def stop(self):
         """とりあえず、待ち時間を飛ばしてStoppingに"""
