@@ -67,7 +67,6 @@ def ping(ip):
 
 
 def start_new_server():
-    delete_droplets()
     host = create_droplet()
     ping(host)
     try:

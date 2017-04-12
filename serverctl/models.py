@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from serverctl import minecraft
 from threading import Thread
+from serverctl_prototype.utils import slack
 
 
 class Game(models.Model):
@@ -50,6 +51,7 @@ class GameServer(models.Model):
         get_latest_by = "created_at"
 
     def _start(self):
+        slack.send('loading')
         self.started_at = timezone.now()
 
         self.status = self.LOADING
@@ -62,6 +64,7 @@ class GameServer(models.Model):
         ServerHistory.objects.create(server=self, status=self.RUNNING)
 
         self.save()
+        slack.send('created')
 
     def start(self):
         Thread(target=self._start, daemon=True).start()
