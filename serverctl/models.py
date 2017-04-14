@@ -41,6 +41,7 @@ class GameServer(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(default=timezone.now)
+    once_created = models.BooleanField(default=False)
     group = models.ForeignKey(GameServerGroup, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=12,
@@ -48,6 +49,7 @@ class GameServer(models.Model):
         default=STOPPING,
     )
     ip = models.CharField(max_length=64, default='')
+    current_id = models.CharField(max_length=64, default='')
 
     class Meta:
         get_latest_by = "created_at"
@@ -55,30 +57,50 @@ class GameServer(models.Model):
     def _generate_id(self):
         return f'{self.group.game.name}-{str(uuid.uuid4())}'
 
-    def _start(self):
-        slack.send('loading')
-        id = self._generate_id()
+    def _restart(self):
+        slack.send('restart')
+
         self.started_at = timezone.now()
-
         self.status = self.LOADING
-        ServerHistory.objects.create(server=self, status=self.LOADING, data_s3_key=id)
+
+        prev_id = self.current_id
+        self.current_id = self._generate_id()
         self.save()
 
-        slack.send(id)
-        minecraft.start_new_server(id)
-        self.ip = minecraft.get_drpolet_ip(id)
-
+        minecraft.restart_new_server(prev_id, self.current_id)
+        self.ip = minecraft.get_drpolet_ip(self.current_id)
         self.status = self.RUNNING
-        ServerHistory.objects.create(server=self, status=self.RUNNING, data_s3_key=id)
-
         self.save()
+
         slack.send('created')
+        slack.send(self.current_id)
+
+    def _start_first(self):
+        slack.send('start first')
+
+        self.current_id = self._generate_id()
+        self.started_at = timezone.now()
+        self.status = self.LOADING
+        self.save()
+
+        minecraft.start_new_server(self.current_id)
+        self.ip = minecraft.get_drpolet_ip(self.current_id)
+        self.status = self.RUNNING
+        self.save()
+
+        slack.send('created')
+        slack.send(self.current_id)
 
     def start(self):
-        Thread(target=self._start, daemon=True).start()
+        if self.once_created:
+            Thread(target=self._restart, daemon=True).start()
+            self.once_created = True
+            self.save()
+        else:
+            Thread(target=self._start_first, daemon=True).start()
 
     def _stop(self):
-        last = ServerHistory.objects.filter(server=self).latest()
+        last = ServerHistory.objects.filter(server=self, status=self.RUNNING).latest()
         self.status = self.SAVING
         ServerHistory.objects.create(server=self, status=self.SAVING, data_s3_key=last.data_s3_key)
         self.save()
@@ -101,6 +123,13 @@ class GameServer(models.Model):
         hours = (timezone.now() - self.started_at).seconds // 60 // 60 + 1
         return self.group.cost_per_hour * hours
 
+    def save(self, *args, **kwargs):
+        super(GameServer, self).save(*args, **kwargs)
+        ServerHistory.objects.create(server=self, status=self.status, data_s3_key=self.current_id)
+
+    def __str__(self):
+        return self.group.name
+
 
 class ServerHistory(models.Model):
     server = models.ForeignKey(GameServer, on_delete=models.CASCADE)
@@ -110,6 +139,13 @@ class ServerHistory(models.Model):
         max_length=12,
         choices=GameServer.STATUS_CHOICES,
     )
+
+    def __str__(self):
+        return f'{self.server}: {self.data_s3_key}'
+
+    def save(self, *args, **kwargs):
+        slack.send(self.data_s3_key)
+        super(ServerHistory, self).save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "created_at"

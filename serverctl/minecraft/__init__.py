@@ -35,6 +35,13 @@ def delete_droplets():
             droplet.destroy()
 
 
+def delete_droplet(droplet_name):
+    manager = get_manager()
+    for droplet in manager.get_all_droplets():
+        if droplet.name == droplet_name:
+            droplet.destroy()
+
+
 def get_drpolet_ip(droplet_name):
     manager = get_manager()
     for droplet in manager.get_all_droplets():
@@ -86,6 +93,26 @@ def start_new_server(id):
     slack.send(c)
 
 
+def restart_new_server(prev_id, now_id):
+    host = create_droplet(now_id)
+    ping(host)
+    slack.send(host)
+    src = f'{settings.BASE_DIR}/tmp/{prev_id}.tar.gz'
+    command = ['ansible-playbook',
+                      f'{settings.BASE_DIR}/playbooks/minecraft/restart.yml',
+                      '-i',
+                      f'{host},',
+                      '--extra-vars',
+                      f'"src={src}"',
+                      '--private-key',
+                      f'{settings.BASE_DIR}/.ssh/id_rsa'
+                      ]
+    slack.send(' '.join(command))
+    subprocess.Popen(' '.join(command), universal_newlines=True, shell=True)
+    a, b, c = ansible_subprocess.run_playbook(f'{settings.BASE_DIR}/playbooks/minecraft/new.yml', [host],
+                                              private_key=f'{settings.BASE_DIR}/.ssh/id_rsa')
+
+
 def stop(server_id):
     ip = get_drpolet_ip(server_id)
     slack.send(ip)
@@ -102,9 +129,7 @@ def stop(server_id):
                       ]
     slack.send(command)
     subprocess.Popen(' '.join(command), universal_newlines=True, shell=True)
-    # delete_droplets()
-    # name = '{}-{}'.format(prefix, str(uuid.uuid4()))
-    # upload(name)
+    delete_droplet(server_id)
 
 
 def upload(filename):
