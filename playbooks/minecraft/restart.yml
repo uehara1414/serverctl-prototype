@@ -1,0 +1,32 @@
+- hosts: all
+  user: root
+  tasks:
+    # - yum: name=* state=latest
+    - yum: name=java state=latest
+    - file: path=/root/minecraft state=directory
+    - synchronize:
+        src: "{{ src }}"
+        dest: /root/data.tar.gz
+    - command: tar xvfz data.tar.gz
+    - get_url:
+        url: https://gist.githubusercontent.com/uehara1414/2f880b966053104f5ed552909c57091d/raw/718a4497202a29985f1689f868b3983c83cafdd0/eula.txt
+        dest: /root/minecraft/eula.txt
+    - get_url:
+        url: https://gist.githubusercontent.com/uehara1414/87668bb4b1dba69969234cf419fa2fa8/raw/8bc4787e2348f1c7f59bbf9ec2582444e35c31a4/start-minecraft.sh
+        dest: /root/minecraft/start-minecraft.sh
+    - get_url:
+        url: https://gist.githubusercontent.com/uehara1414/a523c579234cbf3a6c607d944fed7cef/raw/321dfba035b0ed3de4ac5d5fd0c864e0219d1bce/minecraft-server.service
+        dest: /etc/systemd/system/minecraft-server.service
+    - command: systemctl daemon-reload
+    - name: enable firewalld
+      systemd:
+        name: firewalld
+        state: started
+        enabled: True
+    - firewalld: port=25565/tcp permanent=true state=enabled
+    - command: firewall-cmd --reload
+    - name: start minecraft-server
+      systemd:
+        name: minecraft-server
+        state: started
+        enabled: True
